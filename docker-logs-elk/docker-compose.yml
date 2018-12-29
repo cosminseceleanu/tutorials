@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  filebeat:
+    hostname: filebeat
+    image: docker-logs-elk/filebeat:1.0.0
+    build:
+      context: filebeat
+      dockerfile: Dockerfile
+    volumes:
+      # needed to access all docker logs (read only) :
+     - "/var/lib/docker/containers:/usr/share/dockerlogs/data:ro"
+      # needed to access additional informations about containers
+     - "/var/run/docker.sock:/var/run/docker.sock"
+    links:
+       - logstash
+  kibana:
+    image: kibana:6.5.2
+    environment:
+      - "LOGGING_QUIET=true"
+    links:
+      - elasticsearch
+    ports:
+      - 5601:5601
+  logstash: 
+    hostname: logstash 
+    image: docker-logs-elk/logstash:1.0.0
+    build:
+      context: logstash
+      dockerfile: Dockerfile
+    ports:
+      - 5044-5054:5044
+    environment:
+      LOG_LEVEL: error
+    links:
+      - elasticsearch
+  elasticsearch:
+    hostname: elasticsearch
+    image: docker-logs-elk/elasticsearch:1.0.0
+      build:
+        context: elasticsearch
+        dockerfile: Dockerfile
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200-9220:9200

@@ -1,0 +1,49 @@
+filebeat.inputs:
+- type: docker
+#  json.keys_under_root: true
+#  json.add_error_key: true
+#  json.message_key: message
+#  json.ignore_decoding_error: true
+  combine_partial: true
+  containers:
+    path: "/usr/share/dockerlogs/data"
+    stream: "stdout"
+    ids:
+      - "17f86f768f954e86573a4061142392b5bf81146852aa281ebf6b1a6bad78b69f"
+      - "c3d2e9f8a733d71271cdfc0c20e3199338b48c374bc2ded5b3e5e866de0ee710"
+      - "b33132bd86c6cd4b8dbd9f477f7b853a1564a26f5f11588c7316298b9ee3c888"
+  exclude_files: ['\.gz$']
+  ignore_older: 10m
+
+processors:
+  # decode the log field (sub JSON document) if JSONencoded, then maps it's fields to elasticsearch fields
+- decode_json_fields:
+    fields: ["log", "message"]
+    target: ""
+    # overwrite existing target elasticsearch fields while decoding json fields    
+    overwrite_keys: true
+- add_docker_metadata:
+    host: "unix:///var/run/docker.sock"
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+# setup filebeat to send output to logstash
+output.logstash:
+  hosts: ["logstash"]
+
+# output.elasticsearch:
+  # hosts: ["elasticsearch"]
+
+# Write Filebeat own logs only to file to avoid catching them with itself in docker log files
+logging.level: info
+logging.to_files: true
+logging.to_syslog: false
+loggins.metrice.enabled: false
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+ssl.verification_mode: none
