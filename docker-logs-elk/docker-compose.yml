@@ -29,7 +29,7 @@ services:
       context: logstash
       dockerfile: Dockerfile
     ports:
-      - 5044-5054:5044
+      - 5044:5044
     environment:
       LOG_LEVEL: error
     links:
@@ -37,17 +37,16 @@ services:
   elasticsearch:
     hostname: elasticsearch
     image: docker-logs-elk/elasticsearch:1.0.0
-      build:
-        context: elasticsearch
-        dockerfile: Dockerfile
+    build:
+      context: elasticsearch
+      dockerfile: Dockerfile
     environment:
-      - cluster.name=docker-cluster
+      - cluster.name=docker-logs-elk-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-      - "discovery.zen.ping.unicast.hosts=elasticsearch"
     ulimits:
       memlock:
         soft: -1
         hard: -1
     ports:
-      - 9200-9220:9200
+      - 9200:9200
