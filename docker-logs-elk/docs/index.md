@@ -137,7 +137,7 @@ output.logstash:
  
  ![alt text](./images/containers.png)
  
- Container with name app is simple bash script who prints the following json {\"app\": "dummy", "foo": "bar"} message every two seconds. This message will be transformed and in Elasticsearch json keys “app”, “foo” should be fields in index and we can query them.
+Container with name app is simple bash script who prints the following json {\"app\": "dummy", "foo": "bar"} message every two seconds. This message will be transformed and in Elasticsearch json keys “app”, “foo” should be fields in index and we can query them.
 
 Using Kibana, which can be used using http://localhost:5601, under Discover tab type in search input “foo:bar” and press enter. You should see messages printed from docker container like the image below.
 
@@ -149,11 +149,13 @@ Besides log message printed from our dummy app the log message is enriched with 
  
 This metadata can be used to search logs for example you search using docker compose service `docker.container.labels.com.docker.compose.service: app` or by docker image name `docker.container.image: dummy`.
 
-Resources:
+## Resources:
 1. https://docs.docker.com/
 2. https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
 3. https://www.elastic.co/guide/en/beats/filebeat/current/index.html
 4. https://www.elastic.co/guide/en/kibana/current/index.html
+5. https://www.elastic.co/guide/en/logstash/current/index.html
+6. https://docs.docker.com/compose/
 
 
 
