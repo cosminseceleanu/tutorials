@@ -130,10 +130,10 @@ output.logstash:
  
  ## Deploy containers
  
- 1. git clone https://github.com/cosminseceleanu/tutorials.git
- 2. cd tutorials/docker-logs-elk
- 3. Build and start containers using docker-compose -f docker-compose.yml up -d
- 4. Checking containers using docker-compose -f docker-compose.yml ps and you should have 5 containers
+ 1. `git clone https://github.com/cosminseceleanu/tutorials.git`
+ 2. `cd tutorials/docker-logs-elk`
+ 3. Build and start containers using `docker-compose -f docker-compose.yml up -d`
+ 4. Checking containers status using `docker-compose -f docker-compose.yml ps` and you should have 5 containers
  
  ![alt text](./images/containers.png)
  
