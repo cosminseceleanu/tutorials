@@ -1,4 +1,4 @@
-#Docker logs with Elastic Stack(ELK, Filebeat)
+# Docker logs with Elastic Stack(ELK, Filebeat)
 
 Docker log messages are a very useful tool for a variety of IT tasks but simply using docker logs command is often not enough. Even with a few containers running is very difficult to find something useful in logs and even harder when you run docker over multiple machines. The best solution is to aggregate logs and then you can search for them and filter them, making them easier to work with. One of the most used tool for this kind of problem is Elastic Stack, also known as ELK stack.
 
