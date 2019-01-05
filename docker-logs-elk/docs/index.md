@@ -1,21 +1,21 @@
 # Docker logs with Elastic Stack(ELK, Filebeat)
 
-Docker log messages are a very useful tool for a variety of IT tasks but simply using docker logs command is often not enough. Even with a few containers running is very difficult to find something useful in logs and even harder when you run docker over multiple machines. The best solution is to aggregate logs and then you can search for them and filter them, making them easier to work with. One of the most used tool for this kind of problem is Elastic Stack, also known as ELK stack.
+Docker log messages are a very useful tool for a variety of IT tasks but simply using `docker logs` command is often not enough. Even with a few containers running is very difficult to find something useful in logs and even harder when you run docker over multiple machines. The best solution is to aggregate logs from all machines and containers and then you can easily search through them, analyze them or do anything you want. One of the most used tool for this kind of problem is Elastic Stack, also known as ELK.
 
-For the completion of this tutorial, I suppose you have installed Docker and docker-compose. If you do not already have it, follow the official instructions . This article assumes that the Docker runs natively and the containers are accessible through localhost.
+For the completion of this tutorial, I suppose you have installed Docker and docker-compose. If you don't have it already, follow the official instructions. This article assumes that the Docker runs natively and the containers are accessible through localhost.
 
 ## About ELK
 
-What is ELK? ELK is an acronym for an amazing and powerful collection of three open source projects developed by Elastic.co: Elasticsearch, Logstash, and Kibana.
+What is ELK? ELK is an acronym for an amazing and powerful collection of three open source projects developed by Elastic.co: Elasticsearch, Logstash and Kibana.
 
 ELK or also known as Elastic Stack is a complete end-to-end log analysis solution which helps in deep searching, analyzing and visualizing the log generated from different machines.
 
 
 ![alt text](./images/elk.png)
 
-**Elasticsearch** is a distributed search and analytics engine based on the Lucene library. It provides a powerful RESTful JSON-based api, easy to use, scalable and resilient, schema free documents. Elasticsearch is the heart of the ELK stack, it centrally store your logs.
+**Elasticsearch** is a distributed search and analytics engine based on the Lucene library. It provides a powerful RESTful JSON-based api, easy to use, scalable and resilient and it stores schema free documents. Elasticsearch is the heart of the ELK stack, it centrally store your logs.
 
-**Logstash** is a server-side data processing pipeline that ingests data from a multitude of sources simultaneously, parse it, transforms it, and then sends it to the Elasticsearch. Logstash has a pluggable framework with a lot of plugins to transform different inputs to enriched outputs for example there are plugins for transforming inputs from jdbc, kafka, log4j and other logs.
+**Logstash** is a server-side data processing pipeline that ingests data from a multitude of sources simultaneously, parse it, transforms it, and then sends it to the Elasticsearch. Logstash has a pluggable framework with a lot of plugins to transform different inputs, to enriched outputs. For example there are plugins for transforming inputs from jdbc, kafka, log4j and other logs.
 
 **Kibana** is a flexible visualization tool that consumes data stored in Elasticsearch. Using Kibana you can create line graphs, pie charts, histograms and more. In latests versions of Kibana you can use Vega grammar to build your own visualisations. "A picture’s worth a thousand line of logs".
 
@@ -23,8 +23,8 @@ ELK or also known as Elastic Stack is a complete end-to-end log analysis solutio
 
 ## Filebeat
 
-Filebeat is a open source lightweight shipper for logs written in Go and develope by Elastic.co, same company who developed ELK stack. Filebeat belongs to a bigger project called Beats and his purpose is to send data from hundreds or thousand of machines and systems to Logstash, Kafka, Redis or Elasticsearch. Beats family has shippers for all kind of data, for example:
- * Filebeat - Logs
+Filebeat is a open source lightweight shipper for logs written in Go and developed by Elastic.co, same company who developed ELK stack. Filebeat belongs to a bigger project called Beats and his purpose is to send data from hundreds or thousands of machines and systems to Logstash, Kafka, Redis or Elasticsearch. Beats family has shippers for all kind of data, for example:
+ * Filebeat - File logs
  * Metricbeat - Metrics
  * Auditbeat - Audit Data
  * Packetbat - Network Data
@@ -37,15 +37,16 @@ Filebeat helps you keep the simple things simple by offering a lightweight way t
 
 ## Arhitecture
 
-Assuming you have docker installed on your machine, by default standard output(stdout) off all containers is written into json files. These files are stored on host where docker engine is running under the path `/var/lib/docker/containers/{container-id}/{container-id}-json.log`.
+By default standard output(stdout) off all docker containers is written into json files. These log files are stored on host where docker engine is running, and can be found under the following path `/var/lib/docker/containers/{container-id}/{container-id}-json.log`.
 
-Filebeat will scan files that match the following path `/var/lib/docker/containers/*/*-json.log` transform logs and then send them out to Logstash. Logstash will filter, transform and send them to Elasticsearch, once logs are saved in Elasticsearch you can use Kibana to build dashboards, to search for logs and all other features supported by Kibana.
+Filebeat will scan files that match the following path `/var/lib/docker/containers/*/*-json.log`,  transform logs and then forwards them out to Logstash. Logstash will filter them, transform them and finally forwards them to the Elasticsearch. Once logs are stored in Elasticsearch you can use Kibana to build dashboards, to search through logs and all other features supported by Kibana.
 
 ![alt text](./images/arhitecture.png)
 
 ## ELK and Filebeat dockerfiles and configuration
 
-Elastic Stack services will run as docker containers and Filebeat also. In this tutorial all containers except Filebeat container will be stateless. The strongest argument in favor of stateless container is that deployment is simple and it follows Java principle of “Build once run anywhere”. If you built a stateless image you don't need to worry about where to save container state data, or how to make containers interact with persistent storage.
+Elastic Stack services and Filebeat will run as docker containers. In this tutorial all containers except Filebeat container will be stateless. The strongest argument in favor of stateless container is that deployment is simple and it follows Java principle of “Build once run anywhere”. 
+If you built a stateless image you don't need to worry about where to save container state data, or how to make containers interact with persistent storage.
 
 ### Elasticsearch Dockerfile
 
@@ -81,7 +82,8 @@ Elastic Stack services will run as docker containers and Filebeat also. In this 
    stdout { codec => rubydebug }
 }`
 
-The above configuration file tells to Logstash to accept input logs from beats on port 5044 and send them to Elasticsearch cluster with hosts found under “elasticsearch”. In Elasticsearch logs are stored in indexes with the following name pattern beat-{beat version}-{YYYY.MM.dd}
+The above configuration file tells to Logstash to accept input logs from beats on port 5044 and forwards them to the Elasticsearch cluster. Elasticsearch intances can be found in cluster with hosts named “elasticsearch”. 
+In Elasticsearch logs are stored in indexes with the following name pattern beat-{beat version}-{YYYY.MM.dd}
 
 ### Filebeat Dockerfile
 
@@ -99,9 +101,9 @@ RUN mkdir /usr/share/filebeat/dockerlogs`
 
 `RUN chmod -R go-w /usr/share/filebeat/`
 
-The Filebeat configuration file same as Logstash needs a input and an output. This time input is a path where docker log files are stored and output is logstash.
+The Filebeat configuration file same as Logstash configuration needs a input and an output. This time, input is a path where docker log files are stored and output is Logstash.
 
-Filebeat also is configured to transform files so keys and nested keys from json logs are stored as fields in Elasticsearch, this way we can query them, make dashboards and so on. Another interesting tool that Filebeat can do is adding some docker metadata to each log, metadata can be: docker image, service name from docker compose, container id and more.
+Filebeat is also configured to transform files such that keys and nested keys from json logs are stored as fields in Elasticsearch, in this way we can query them, make dashboards and so on. Another interesting tool that Filebeat can do is adding some docker metadata to each log, this metadata can be: docker image, service name from docker compose, container id and more.
 
 `filebeat.inputs:
 `-` type: docker
@@ -137,17 +139,16 @@ output.logstash:
  
  ![alt text](./images/containers.png)
  
-Container with name app is simple bash script who prints the following json {\"app\": "dummy", "foo": "bar"} message every two seconds. This message will be transformed and in Elasticsearch json keys “app”, “foo” should be fields in index and we can query them.
+Container with name app is simple bash script who prints the following json {"app": "dummy", "foo": "bar"} message every two seconds. This message will be transformed and in Elasticsearch, json keys “app” and “foo” will be fields in index and we can use them.
 
-Using Kibana, which can be used using http://localhost:5601, under Discover tab type in search input “foo:bar” and press enter. You should see messages printed from docker container like the image below.
+Using Kibana, which can be used using http://localhost:5601, under Discover tab write in the search box “foo:bar” and then press enter. You should see messages printed from docker container like the image below.
 
 ![alt text](./images/kibana1.png)
 
 ![alt text](./images/kibana2.png)
 
-Besides log message printed from our dummy app the log message is enriched with metadata from filebeat like: beat.hostname, beat.name, bean.version and more but also the log will have some docker metadata.
- 
-This metadata can be used to search logs for example you search using docker compose service `docker.container.labels.com.docker.compose.service: app` or by docker image name `docker.container.image: dummy`.
+Besides log message printed from our dummy app the log message is enriched with metadata from filebeat like: beat.hostname, beat.name, bean.version and more. 
+As the Filebeat metadata the log will have some docker metadata. This metadata can be used to search logs for example you search using docker compose service `docker.container.labels.com.docker.compose.service: app` or by docker image name `docker.container.image: dummy`.
 
 ## Resources:
 1. https://docs.docker.com/
