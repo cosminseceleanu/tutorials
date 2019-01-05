@@ -2,3 +2,6 @@
 *.log
 
 .idea
+
+apm-java/target/*
+apm-java/*.iml
