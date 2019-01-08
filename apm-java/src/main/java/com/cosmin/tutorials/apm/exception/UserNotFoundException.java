@@ -1,4 +1,4 @@
-package com.cosmin.tutorials.apm.user.exception;
+package com.cosmin.tutorials.apm.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

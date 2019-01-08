@@ -18,6 +18,7 @@ services:
       - 8080:8080
     links:
       - apm
+      - mysql
   kibana:
     image: kibana:6.5.2
     environment:
@@ -53,3 +54,13 @@ services:
     links:
       - elasticsearch
       - kibana
+  mysql:
+    image: mysql:8.0.13
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: qazxsw
+      MYSQL_DATABASE: users
+      MYSQL_USER: app
+      MYSQL_PASSWORD: ecvbjkl9876t

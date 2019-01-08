@@ -1,8 +1,8 @@
-package com.cosmin.tutorials.apm.user.controller;
+package com.cosmin.tutorials.apm.controller;
 
-import com.cosmin.tutorials.apm.user.exception.UserNotFoundException;
-import com.cosmin.tutorials.apm.user.model.User;
-import com.cosmin.tutorials.apm.user.service.UserService;
+import com.cosmin.tutorials.apm.exception.UserNotFoundException;
+import com.cosmin.tutorials.apm.database.User;
+import com.cosmin.tutorials.apm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +25,8 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity create(@RequestBody User user) {
-        userService.save(user);
-
-        return new ResponseEntity(HttpStatus.CREATED);
+    public User create(@RequestBody User user) {
+        return userService.save(user);
     }
 
     @DeleteMapping("/{id}")
