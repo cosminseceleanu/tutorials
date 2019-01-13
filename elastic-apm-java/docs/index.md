@@ -1,4 +1,4 @@
-#Monitor Spring Boot Application with Elastic APM, Elasticsearch and Kibana
+#Monitor Spring Boot Application Performance with Elastic APM, Elasticsearch and Kibana
 
 ##Introduction
 In this article we will learn how to monitor performance for a simple Spring Boot application. But first we need to define what is application performance monitoring and why do we need it. 
