@@ -19,7 +19,7 @@ To complete of this tutorial, I assume you have installed Maven, Docker and dock
 
 All services used in this tutorial will run as docker containers. Our purpose is to monitor performance for Java applications, so we will have some containers with Spring Boot application. These applications will be profiled by a java agent provided by Elastic. 
 
-The java agent will collect and send metrics to the APM server and then the APM server will transform this metrics and in the will send them to the Elasticsearch. Once metrics are stored in Elasticsearch, you can explore your application performance with Kibana. The Kibana has built-in dashboards for logs received from APM servers, this dashboard can be found under the "APM" tab.  
+The java agent will collect and send metrics to the APM server and then the APM server will transform this metrics and in the will send them to the Elasticsearch. Once metrics are stored in Elasticsearch, you can explore your application performance by using Kibana built-in APM dashboards which can be found under the "APM" tab.
 
 ![alt-test](./images/arhitecture.png)
 
@@ -148,8 +148,10 @@ For the next metrics that I will show you I am going to execute the following cu
 * curl -X GET http://localhost:8080/api/v1/users/2
 
 After you execute some HTTP requests you can use Kibana by accessing http://localhost:5601 and under the APM tab, you should see a list of services(agents) with some summary performance metrics.
+> List of APM Agents(services)
 ![](./images/apm-overview.png) 
 
+> Overview transactions
 ![](./images/apm-traces.png) 
 
 ![](./images/apm-request-overview.png) 
