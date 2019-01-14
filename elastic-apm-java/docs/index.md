@@ -148,18 +148,24 @@ For the next metrics that I will show you I am going to execute the following cu
 * curl -X GET http://localhost:8080/api/v1/users/2
 
 After you execute some HTTP requests you can use Kibana by accessing http://localhost:5601 and under the APM tab, you should see a list of services(agents) with some summary performance metrics.
-> List of APM Agents(services)
+> List of APM Agents/Services where every list item contains summary data, such as: average response time, transactions per minute, errors per minute
+
 ![](./images/apm-overview.png) 
 
-> Overview transactions
+> Overview of transactions for all services
+
 ![](./images/apm-traces.png) 
+
+> Dashboard with metrics about incoming HTTP requests, here we can find transactions for all http endpoints of our REST Api, and for each transaction we can see average response time, request per minute and other important metrics.
 
 ![](./images/apm-request-overview.png) 
 
+> If you want see more details about a transaction you can click on any transaction, for example if you click on UserController#get transaction you will see details similar with the image below.  
 
 ![](./images/user-get-transaction-sample.png) 
 
-For the user REST api we will use `UserService`, a bean class which has a Spring Repository as dependency, this service will perform basic user operations. Before each database query we call a method who execute a random sleep. The `sleep` method is annotated with `@CaptureSpan` in order to collect time spent for this method call. In the picture bellow we can see in the transaction details
+In the above picture we can see that for a GET request, most of the time is spent with `otherOperations`, this represents a custom method call inside `UserService`. 
+For this custom metric I've used agent API to measure how much time is spent with this method call, because by default APM agent will not measure it, and it's done by adding annotation `CaptureSpan` to the method.
 
 ```java
 package com.cosmin.tutorials.apm.service;
@@ -216,13 +222,81 @@ public class UserService {
 
 ```    
 
+> Details of the otberOperations from UserController#get transaction
+
 ![](./images/user-get-sleep-details.png)
 
-![](./images/user-get-transaction-details.png) 
+> Details of the UserController#get transaction 
+
+![](./images/user-get-transation-details.png) 
+
+> Details of the sql query executed during UserController#get transaction 
 
 ![](./images/user-get-select-details.png)
 
- 
+
+All of the above pictures was about incoming http requests, but we also monitor background tasks. Metrics for this can be found under the `Task` tab in the top of the dashboard.
+
+> Dashboard with metrics about transactions with type Task, and for each transaction we can see average response time, request per minute.
+
+![](./images/apm-tasks-overview.png)
+
+The performance metrics about tasks are generated using agent public Api, but this time we need to generate the transaction by using annotation `@CaptureTransaction` as you can see in the bellow Java code:
+
+```java
+package com.cosmin.tutorials.apm.tasks;
+
+import co.elastic.apm.api.CaptureSpan;
+import co.elastic.apm.api.CaptureTransaction;
+import com.cosmin.tutorials.apm.database.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.util.Random;
+
+@Service
+public class PrintUsersTask {
+
+    private final static Logger logger = LoggerFactory.getLogger(PrintUsersTask.class);
+    private UserRepository userRepository;
+
+    @Autowired
+    public PrintUsersTask(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Scheduled(fixedDelayString = "5000")
+    public void execute() {
+        logger.info("run scheduled test");
+        doExecute();
+    }
+
+    @CaptureTransaction(type = "Task", value = "PrintUsers")
+    private void doExecute() {
+        userRepository.findAll().forEach(user-> logger.debug(user.getEmail()));
+        sleep();
+    }
+
+    @CaptureSpan("someCustomOperation")
+    private void sleep() {
+        try {
+            Random random = new Random();
+            int milis = random.nextInt(120 - 20 + 1) + 20;
+            Thread.sleep(milis);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+}
+
+```
+
+> Details about PrintUser task transaction
+
+![](./images/task-transaction-sample.png)
 
 
 ## Resources:
@@ -231,3 +305,6 @@ public class UserService {
 3. https://www.elastic.co/guide/en/apm/server/current/running-on-docker.html
 4. https://www.elastic.co/guide/en/apm/agent/java/current/index.html
 5. https://www.elastic.co/guide/en/apm/server/current/index.html
+6. https://github.com/cosminseceleanu/tutorials
+7. https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+8. https://www.elastic.co/guide/en/kibana/current/index.html
