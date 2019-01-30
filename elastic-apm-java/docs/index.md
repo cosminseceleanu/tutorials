@@ -5,7 +5,8 @@ In this article we will learn how to monitor performance for a simple Spring Boo
 
 Application performance monitoring also known as APM is used to check that application meet performance standards and provide a good quality user experience.
 
-Most APM tools collect metrics about the response time for incoming requests, CPU utilisation, bandwidth used, memory consumption, data throughput, database commands, code executions and so on. We need APM to have an idea how application behaves over time and how it responds under different throughput's. Also very often APM dashboards are used to quickly discover, isolate and solve problems when they appear.
+Most APM tools collect metrics about the response time for incoming requests, CPU utilisation, bandwidth used, memory consumption, data throughput, database commands, code executions and so on. 
+We need APM to have an idea how application behaves over time and how it responds under different throughput's. Also very often APM dashboards are used to quickly discover, isolate and solve problems when they appear.
 
 In this tutorial we are going to:
 1. Develop a REST API and some background tasks using Spring Boot 2
@@ -17,9 +18,9 @@ To complete of this tutorial, I assume you have installed Maven, Docker and dock
  
 ## Architecture
 
-All services used in this tutorial will run as docker containers. Our purpose is to monitor performance for Java applications, so we will have some containers with Spring Boot application. These applications will be profiled by a java agent provided by Elastic. 
+All services used in this tutorial will run as docker containers. Our purpose is to monitor performance for Java applications, so we will have some containers with a Spring Boot application. These applications will be profiled by a java agent provided by Elastic. 
 
-The java agent will collect and send metrics to the APM server and then the APM server will transform this metrics and in the will send them to the Elasticsearch. Once metrics are stored in Elasticsearch, you can explore your application performance by using Kibana built-in APM dashboards which can be found under the "APM" tab.
+The java agent will collect and send metrics to the APM server and then the APM server will transform this metrics and in the end will send them to the Elasticsearch. Once metrics are stored in Elasticsearch, you can explore your application performance by using Kibana built-in APM dashboards which can be found under the "APM" tab.
 
 ![alt-test](./images/arhitecture.png)
 
@@ -31,7 +32,7 @@ Elastic APM it allows you to monitor applications in real time, collecting detai
 
 ![alt-text](./images/apm-architecture.png)
 
-APM server is an open source application written in GO. his purpose it's to receive data from APM agents, transforms them into Elasticsearch documents. It does this by exposing a JSON HTTP api.
+APM server is an open source application written in GO. His purpose it's to receive data from APM agents,transform it into Elasticsearch documents and send it to the Elasticsearch. It does this by exposing a JSON HTTP api.
 
 APM Agents instrument your code and collect performance data and errors at runtime. The data is buffered for a short period of time after which it is sent to the APM Server. Agents are written in the same programming language as your application. Elastic provide agents for the following languages:
 1. Java
@@ -47,15 +48,15 @@ The Elastic APM Java agent automatically instruments various APIs, frameworks an
 If you have technologies that aren't supported by the agent or you want to collect some custom metrics it can be done using [agent API](https://www.elastic.co/guide/en/apm/agent/java/current/public-api.html). With this api you can programmatically generate performance metrics.    
 
 ## Spring Boot Application
-The Java application which will be monitored is a Spring Boot 2 application. Using Spring Boot we're going to create a simple REST api for users that are stored in a MYSQL server, the api will provide simple CRUD operations for users data.
+The Java application which will be monitored is a Spring Boot 2 application. Using Spring Boot we're going to create a simple REST api for users that are stored in a MYSQL database, the api will provide simple CRUD operations for users data.
 
 Besides the REST api, application will have some scheduled backgrounds tasks. This tasks does no do anything util, they are built only to show how we can monitor background tasks by using APM Agent public API.
 
 ###### REST endpoints
 
-* GET `/api/v1/users/{userId}` - Returns user with id from db or 404 if no user was found
+* GET `/api/v1/users/{userId}` - Returns user with id from MYSQL or 404 if no user was found
 * POST `/api/v1/users` - Creates a new user. Request body sample: `{"name":"Cosmin Seceleanu","email":"test@email.com"}` 
-* DELETE `/api/v1/users/{userId}` - Deletes a user
+* DELETE `/api/v1/users/{userId}` - Delete a user with id userIR or returns 404 if user does not exists
 
 
 ## Deploy services
@@ -101,7 +102,7 @@ USER apm-server
 
 In the APM Server configuration we need to configure input and output of the server. For input we specify the host and port where the HTTP Api will run, and for the output we set Elasticsearch hosts.
 
-Also we will configure APM Server to automatically setup APM indices, dashboards and other things in Kibana, for this we just set Kibana uri and enable the flag `setup.dashboards.enabled`. 
+Also, we will configure APM Server to automatically setup APM indices, dashboards and other things in Kibana, for this we just set Kibana uri and enable the following flag `setup.dashboards.enabled`. 
 
 ```yml
 apm-server:
@@ -133,7 +134,7 @@ What will we monitor?
 2. Time for MySQL queries
 3. Using APM agent public api we will monitor time for some custom code and a background task 
 
-To have some metrics we need to call our service, we can do using the `curl` command. If you want to execute a large number of request you can use this tools:  
+To have some metrics we need to call our REST service, we can do this using the `curl` command. If you want to execute a large number of request you can use this tools:  
 * [Apache Bench](https://httpd.apache.org/docs/2.4/programs/ab.html)
 * [Apache JMeter](https://jmeter.apache.org/)
 
@@ -147,7 +148,8 @@ For the next metrics that I will show you I am going to execute the following cu
 * curl -X GET http://localhost:8080/api/v1/users/1
 * curl -X GET http://localhost:8080/api/v1/users/2
 
-After you execute some HTTP requests you can use Kibana by accessing http://localhost:5601 and under the APM tab, you should see a list of services(agents) with some summary performance metrics.
+After you execute some HTTP requests, you can use Kibana by accessing http://localhost:5601 and under the APM tab, you should see a list of services(agents) with some summary performance metrics.
+
 > List of APM Agents/Services where every list item contains summary data, such as: average response time, transactions per minute, errors per minute
 
 ![](./images/apm-overview.png) 
@@ -156,16 +158,16 @@ After you execute some HTTP requests you can use Kibana by accessing http://loca
 
 ![](./images/apm-traces.png) 
 
-> Dashboard with metrics about incoming HTTP requests, here we can find transactions for all http endpoints of our REST Api, and for each transaction we can see average response time, request per minute and other important metrics.
+> Dashboard with metrics about incoming HTTP requests, here we can find transactions for all HTTP endpoints of our REST Api, and for each transaction we can see average response time, request per minute and other metrics.
 
 ![](./images/apm-request-overview.png) 
 
-> If you want see more details about a transaction you can click on any transaction, for example if you click on UserController#get transaction you will see details similar with the image below.  
+> If you want to see more details about a transaction you can click on any transaction, for example if you click on UserController#get transaction you will see details similar with the image below.  
 
 ![](./images/user-get-transaction-sample.png) 
 
 In the above picture we can see that for a GET request, most of the time is spent with `otherOperations`, this represents a custom method call inside `UserService`. 
-For this custom metric I've used agent API to measure how much time is spent with this method call, because by default APM agent will not measure it, and it's done by adding annotation `CaptureSpan` to the method.
+For this custom metric I've used agent API to measure how much time is spent with this method call, because by default APM agent will not measure it, and it's done by adding annotation `@CaptureSpan` to the method.
 
 ```java
 package com.cosmin.tutorials.apm.service;
@@ -222,7 +224,7 @@ public class UserService {
 
 ```    
 
-> Details of the otberOperations from UserController#get transaction
+> Details of the otherOperations from UserController#get transaction
 
 ![](./images/user-get-sleep-details.png)
 
