@@ -1,11 +1,12 @@
 # Monitor Spring Boot Application Performance with Elastic APM, Elasticsearch and Kibana
 
 ## Introduction
-In this article we will learn how to monitor performance for a simple Spring Boot application. But first we need to define what is application performance monitoring and why do we need it. 
+We know that applications deployed in a production state require large amount of data for performance and debuging purposes.
+In this article we will teach you how to monitor performance for a simple Spring Boot application. 
 
-Application performance monitoring also known as APM is used to check that application meet performance standards and provide a good quality user experience.
+But first we need to define what is application performance monitoring and why do we need it. Application performance monitoring, also known as APM, is used to check that application meet performance standards and provide a good quality user experience.
 
-Most APM tools collect metrics about the response time for incoming requests, CPU utilisation, bandwidth used, memory consumption, data throughput, database commands, code executions and so on. 
+Most APM tools are collecting metrics about the response time for incoming requests, CPU utilisation, bandwidth used, memory consumption, data throughput, database commands, code executions and so on. 
 We need APM to have an idea how application behaves over time and how it responds under different throughput's. Also very often APM dashboards are used to quickly discover, isolate and solve problems when they appear.
 
 In this tutorial we are going to:
@@ -14,7 +15,7 @@ In this tutorial we are going to:
 3. Deploy Elastic APM, Elasticsearch and Kibana as docker containers
 4. Use Kibana APM dashboard to monitor Spring Boot application
 
-To complete of this tutorial, I assume you have installed Maven, Docker and docker-compose. If you don't have it already, follow the official instructions. This article assumes that the Docker runs natively and the containers are accessible through localhost.
+To be able to complete this tutorial, I assume you have installed Maven, Docker and docker-compose. If you don't have it already, follow the official instructions. This article assumes that the Docker runs natively and the containers are accessible through localhost.
  
 ## Architecture
 
@@ -26,13 +27,13 @@ The java agent will collect and send metrics to the APM server and then the APM 
 
 ## Elastic APM
 
-Elastic APM it allows you to monitor applications in real time, collecting detailed performance metrics on response time for incoming requests, database queries, external HTTP requests, etc. Elastic APM has two components: 
+Elastic APM allows you to monitor applications in real time, collecting detailed performance metrics on response time for incoming requests, database queries, external HTTP requests, etc. Elastic APM has two components: 
 * APM Server
 * APM agents
 
 ![alt-text](./images/apm-architecture.png)
 
-APM server is an open source application written in GO. His purpose it's to receive data from APM agents,transform it into Elasticsearch documents and send it to the Elasticsearch. It does this by exposing a JSON HTTP api.
+APM server is an open source application written in GO. Its purpose is to receive data from APM agents, transform it into Elasticsearch documents and send them to Elasticsearch. This is performed using an JSON HTTP API.
 
 APM Agents instrument your code and collect performance data and errors at runtime. The data is buffered for a short period of time after which it is sent to the APM Server. Agents are written in the same programming language as your application. Elastic provide agents for the following languages:
 1. Java
@@ -41,7 +42,7 @@ APM Agents instrument your code and collect performance data and errors at runti
 4. Python
 5. Go
 
-The purpose of this article is to monitor Java application, so we will discuss more details about the Java agent. First, it can be used as any other java agent by using `-javagent:path/to/agent.jar` when you start your jar. Also you need specify some mandatory parameters such as: apm server url, your service name and java packages to scan, for more details check the [official documentation](https://www.elastic.co/guide/en/apm/agent/java/current/configuration.html).
+The purpose of this article is to monitor Java application, so we will discuss more details about the Java agent. First, it can be used as any other java agent by using `-javagent:path/to/agent.jar` when you start your jar. Also, you need specify some mandatory parameters such as: apm server url, your service name and java packages to scan, for more details check the [official documentation](https://www.elastic.co/guide/en/apm/agent/java/current/configuration.html).
 
 The Elastic APM Java agent automatically instruments various APIs, frameworks and application servers, you can check supported technologies [here](https://www.elastic.co/guide/en/apm/agent/java/current/supported-technologies-details.html). For our demo application, the agent will automatically collect performance data for Spring Web MVC and Spring Data JPA(MySQL).
 
@@ -50,13 +51,13 @@ If you have technologies that aren't supported by the agent or you want to colle
 ## Spring Boot Application
 The Java application which will be monitored is a Spring Boot 2 application. Using Spring Boot we're going to create a simple REST api for users that are stored in a MYSQL database, the api will provide simple CRUD operations for users data.
 
-Besides the REST api, application will have some scheduled backgrounds tasks. This tasks does no do anything util, they are built only to show how we can monitor background tasks by using APM Agent public API.
+Besides the REST api, the application will have some scheduled backgrounds tasks. These tasks do not have any functionalities, they are built only to show how we can monitor background tasks using APM agent pulbic API.
 
 ###### REST endpoints
 
-* GET `/api/v1/users/{userId}` - Returns user with id from MYSQL or 404 if no user was found
+* GET `/api/v1/users/{userId}` - Returns an user with a specific ID or 404 if no user was found
 * POST `/api/v1/users` - Creates a new user. Request body sample: `{"name":"Cosmin Seceleanu","email":"test@email.com"}` 
-* DELETE `/api/v1/users/{userId}` - Delete a user with id userIR or returns 404 if user does not exists
+* DELETE `/api/v1/users/{userId}` - Deletes an user with a specific userid or returns 404 if user does not exists
 
 
 ## Deploy services
@@ -69,7 +70,7 @@ Besides the REST api, application will have some scheduled backgrounds tasks. Th
  
  ![alt-text](./images/docker-ps.png)
  
- If APM Server service doesn't start, is because it uses Elasticsearch and Elasticsearch take some time to start. To solve this, just restart some containers using this command: `docker-compose -f docker/docker-compose.yml restart apm user-microservice
+ If APM Server service doesn't start, it's because it uses Elasticsearch and Elasticsearch take some time to start. To solve this, just restart some containers using this command: `docker-compose -f docker/docker-compose.yml restart apm user-microservice
 `. 
 
 #### Spring Boot Service Dockerfile
@@ -100,7 +101,7 @@ USER apm-server
 
 ### APM Server Configuration
 
-In the APM Server configuration we need to configure input and output of the server. For input we specify the host and port where the HTTP Api will run, and for the output we set Elasticsearch hosts.
+In the APM Server configuration we need to configure the input and the output of the server. For the iniput, we need to specify the host and port where the HTTP API will run, and for the output we set Elasticsearch hosts.
 
 Also, we will configure APM Server to automatically setup APM indices, dashboards and other things in Kibana, for this we just set Kibana uri and enable the following flag `setup.dashboards.enabled`. 
 
@@ -166,8 +167,8 @@ After you execute some HTTP requests, you can use Kibana by accessing http://loc
 
 ![](./images/user-get-transaction-sample.png) 
 
-In the above picture we can see that for a GET request, most of the time is spent with `otherOperations`, this represents a custom method call inside `UserService`. 
-For this custom metric I've used agent API to measure how much time is spent with this method call, because by default APM agent will not measure it, and it's done by adding annotation `@CaptureSpan` to the method.
+In the above picture we can see that for a GET request, most of the time is spent with `otherOperations`, this represents a custom method called inside `UserService`. 
+For this custom metric, I've used agent API to measure this method call's performance, because by default, the APM agent will not measure it. This can be done by adding the annotation `@CaptureSpan` to the desired method.
 
 ```java
 package com.cosmin.tutorials.apm.service;
@@ -236,14 +237,13 @@ public class UserService {
 
 ![](./images/user-get-select-details.png)
 
-
-All of the above pictures was about incoming http requests, but we also monitor background tasks. Metrics for this can be found under the `Task` tab in the top of the dashboard.
+All pictures from above are about incoming HTTP requests, but we also need to monitor background tasks. These tasks are generating metrics that can be found under the `Task` tab in the top of the dashboard.
 
 > Dashboard with metrics about transactions with type Task, and for each transaction we can see average response time, request per minute.
 
 ![](./images/apm-tasks-overview.png)
 
-The performance metrics about tasks are generated using agent public Api, but this time we need to generate the transaction by using annotation `@CaptureTransaction` as you can see in the bellow Java code:
+The performance metrics about tasks are generated using agent public Api, but this time we need to generate the transaction by using the annotation `@CaptureTransaction` as you can see in the bellow Java code:
 
 ```java
 package com.cosmin.tutorials.apm.tasks;
