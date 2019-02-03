@@ -2,7 +2,7 @@
 
 ## Introduction
 We know that applications deployed in a production state require large amount of data for performance and debuging purposes.
-In this article we will teach you how to monitor performance for a simple Spring Boot application. 
+In this article I will teach you how to monitor performance for a simple Spring Boot application. 
 
 But first we need to define what is application performance monitoring and why do we need it. Application performance monitoring, also known as APM, is used to check that application meet performance standards and provide a good quality user experience.
 
