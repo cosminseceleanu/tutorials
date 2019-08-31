@@ -3,5 +3,5 @@
 
 .idea
 
-apm-java/target/*
-apm-java/*.iml
+*/target/*
+*/settings.xml
