@@ -1,4 +1,4 @@
- Monitor Spring Boot Application Performance with Elastic APM, Elasticsearch and Kibana
+# Monitor Spring Boot Application Performance with Elastic APM, Elasticsearch and Kibana
 
 ## Introduction
 We know that applications deployed in a production state require large amount of data for performance and debuging purposes.
