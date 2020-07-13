@@ -50,63 +50,72 @@ If you built a stateless image you don't need to worry about where to save conta
 
 ### Elasticsearch Dockerfile
 
-`FROM docker.elastic.co/elasticsearch/elasticsearch:6.5.2`
+```Dockerfile
+FROM docker.elastic.co/elasticsearch/elasticsearch:6.5.2
 
-`COPY --chown=elasticsearch:elasticsearch elasticsearch.yml /usr/share/elasticsearch/config/`
+COPY --chown=elasticsearch:elasticsearch elasticsearch.yml /usr/share/elasticsearch/config/
 
-`CMD ["elasticsearch", "-Elogger.level=INFO"]`
+CMD ["elasticsearch", "-Elogger.level=INFO"]
+```
 
 ### Logstash Dockerfile
 
-`FROM docker.elastic.co/logstash/logstash:6.5.2`
+```Dockerfile
+FROM docker.elastic.co/logstash/logstash:6.5.2
 
-`RUN rm -f /usr/share/logstash/pipeline/logstash.conf`
+RUN rm -f /usr/share/logstash/pipeline/logstash.conf
 
-`COPY pipeline/ /usr/share/logstash/pipeline/`
+COPY pipeline/ /usr/share/logstash/pipeline/
+```
 
 ### Logstash conf 
 
-`input {
+```yml
+input {
     beats {
         port => 5044
         host => "0.0.0.0"
       }
-    }`
+    }
     
-`output {
+output {
     elasticsearch {
         hosts => elasticsearch
         manage_template => false
             index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
     }
    stdout { codec => rubydebug }
-}`
+}
+```
 
 The above configuration file tells Logstash to accept input logs from beats on port 5044 and forwards them to the Elasticsearch cluster. Elasticsearch instances can be found in cluster with hosts named “elasticsearch”. 
 In Elasticsearch logs are stored in indexes with the following name pattern beat-{beat version}-{YYYY.MM.dd}
 
 ### Filebeat Dockerfile
 
-`FROM docker.elastic.co/beats/filebeat:6.5.2`
+```Dockerfile
+FROM docker.elastic.co/beats/filebeat:6.5.2
 
-`#` `Copy our custom configuration file
-COPY filebeat.yml /usr/share/filebeat/filebeat.yml`
+# Copy our custom configuration file
+COPY filebeat.yml /usr/share/filebeat/filebeat.yml
 
-`USER root`
+USER root
 
-`#` `Create a directory to map volume with all docker log files
-RUN mkdir /usr/share/filebeat/dockerlogs`
+# Create a directory to map volume with all docker log files
+RUN mkdir /usr/share/filebeat/dockerlogs
 
-`RUN chown -R root /usr/share/filebeat/`
+RUN chown -R root /usr/share/filebeat/
 
-`RUN chmod -R go-w /usr/share/filebeat/`
+RUN chmod -R go-w /usr/share/filebeat/
+```
 
 The Filebeat configuration file, same as the Logstash configuration, needs an input and an output. This time, the input is a path where docker log files are stored and the output is Logstash.
 
 Filebeat is also configured to transform files such that keys and nested keys from json logs are stored as fields in Elasticsearch. In this way we can query them, make dashboards and so on. Another interesting thing that Filebeat can do is adding some docker metadata to each log, this metadata can be: docker image, service name from docker compose, container id and more.
 
-`filebeat.inputs:
-`-` type: docker
+```yml
+filebeat.inputs:
+- type: docker
  combine_partial: true
  containers:
    path: "/usr/share/dockerlogs/data"
@@ -114,21 +123,22 @@ Filebeat is also configured to transform files such that keys and nested keys fr
    ids:
      - "*"
  exclude_files: ['\.gz$\']
- ignore_older: 10m`
+ ignore_older: 10m
  
-`processors:
- `#` decode the log field (sub JSON document) if JSON encoded, then maps it's fields to elasticsearch fields
-`-` decode_json_fields:
+processors:
+ # decode the log field (sub JSON document) if JSON encoded, then maps it's fields to elasticsearch fields
+- decode_json_fields:
    fields: ["log", "message"]
    target: ""
-   `#` overwrite existing target elasticsearch fields while decoding json fields   
+   # overwrite existing target elasticsearch fields while decoding json fields   
    overwrite_keys: true
-`-` add_docker_metadata:
-   host: "unix:///var/run/docker.sock"`
+- add_docker_metadata:
+   host: "unix:///var/run/docker.sock"
    
-`#` `setup filebeat to send output to logstash
+# setup filebeat to send output to logstash
 output.logstash:
- hosts: ["logstash"]`
+ hosts: ["logstash"]
+```
  
  ## Deploy containers
  
