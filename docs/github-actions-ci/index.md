@@ -31,9 +31,6 @@ Let's start building our first Github action, for this all we need to do is to d
 
 
 #### Build Action 
-Build action is quite simple, will run on the ubuntu latest OS then will install java and maven and then will run 2 maven commands: `mvn --no-transfer-progress clean compile` for the **step 1** oh the pipeline and `mvn test` for the **step 2**.
-
-The first part of the yml file describes the triggers for the action, and in this case action will start when a pull request to `master` branch is opened.
 
 ```yml
 name: Build
@@ -56,36 +53,12 @@ jobs:
       run: mvn test
 ```
 
+Build action is quite simple, will run on the ubuntu latest OS then will install java and maven and then will run 2 maven commands: `mvn --no-transfer-progress clean compile` for the **step 1** oh the pipeline and `mvn test` for the **step 2**.
+
+The first part of the yml file describes the triggers for the action, and in this case action will start when a pull request to `master` branch is opened.
+
 
 #### Linter Actions
-
-To ensure a coding standard for the Java application I'll use [Checkstyle](https://checkstyle.sourceforge.io/). Checkstyle is a highly configurable development tool that can be used with almost any coding standard and has also support for some of the Java editors, for example Intellij has a nice [plugin](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) that integrates with Checkstyle.
-
-First step to configure Checkstyle for a Java application is to agree with your team on a coding standard and create a `checkstyle.xml` file with rules. For this tutorial Checkstyle rules files can be found placed under `.idea` directory from the root of the project.
-
-
-The final step that needs to be done in your Java application is to add the [Maven Checkstyle Plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/) to Java application. `failsOnError` is set to `false` because the maven command should not fail regardless of violations and leave this responsibility to [Reviewdog](https://github.com/reviewdog/reviewdog). 
-
-```xml
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-checkstyle-plugin</artifactId>
-    <version>3.1.1</version>
-    <configuration>
-        <configLocation>.idea/checkstyle.xml</configLocation>
-        <consoleOutput>true</consoleOutput>
-        <failsOnError>false</failsOnError>
-    </configuration>
-</plugin>
-```
-The same as build action, the linter action is trigger by a pull request event. The Linter action will also run on Ubuntu OS, uses Java action to run`mvn checkstyle:checkstyle-aggregate` command that scans the project and generates `checkstyle-result.xml` file with violations.
-Once checkstyle result file is generated then Reviewdog action is used to report violations to the Github pull request and mark check as failed if there are any violations with **error** level. This is level is configurable, for many details check [Reviewdog](https://github.com/reviewdog/reviewdog) documentation.
- 
-Reviewdog will add comments to the Github pull request, and he needs some credentials to be able to push those comments. To grant access we need Github Personal access tokens(PAT).
- 1. Generate a token [here](https://github.com/settings/tokens), only repo scopes are enough
- 2. Go to the Github repository settings and add PAT to `CI_CD` secret - https://github.com/{{username/org}}/{{repository}}/settings/secrets/actions/new 
-
-![alt-test](./assets/git_secret.png)
 
 ```yml
 name: Linter
@@ -122,8 +95,43 @@ jobs:
 
 ```
 
+To ensure a coding standard for the Java application I'll use [Checkstyle](https://checkstyle.sourceforge.io/). Checkstyle is a highly configurable development tool that can be used with almost any coding standard and has also support for some of the Java editors, for example Intellij has a nice [plugin](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) that integrates with Checkstyle.
+
+First step to configure Checkstyle for a Java application is to agree with your team on a coding standard and create a `checkstyle.xml` file with rules. For this tutorial Checkstyle rules files can be found placed under `.idea` directory from the root of the project.
+
+
+The final step that needs to be done in your Java application is to add the [Maven Checkstyle Plugin](https://maven.apache.org/plugins/maven-checkstyle-plugin/) to Java application. `failsOnError` is set to `false` because the maven command should not fail regardless of violations and leave this responsibility to [Reviewdog](https://github.com/reviewdog/reviewdog). 
+
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-checkstyle-plugin</artifactId>
+    <version>3.1.1</version>
+    <configuration>
+        <configLocation>.idea/checkstyle.xml</configLocation>
+        <consoleOutput>true</consoleOutput>
+        <failsOnError>false</failsOnError>
+    </configuration>
+</plugin>
+```
+The same as build action, the linter action is trigger by a pull request event. The Linter action will also run on Ubuntu OS, uses Java action to run`mvn checkstyle:checkstyle-aggregate` command that scans the project and generates `checkstyle-result.xml` file with violations.
+Once checkstyle result file is generated then Reviewdog action is used to report violations to the Github pull request and mark check as failed if there are any violations with **error** level. This is level is configurable, for many details check [Reviewdog](https://github.com/reviewdog/reviewdog) documentation.
+ 
+Reviewdog will add comments to the Github pull request, and he needs some credentials to be able to push those comments. To grant access we need Github Personal access tokens(PAT).
+ 1. Generate a token [here](https://github.com/settings/tokens), only repo scopes are enough
+ 2. Go to the Github repository settings and add PAT to `CI_CD` secret - https://github.com/{{username/org}}/{{repository}}/settings/secrets/actions/new 
+
+![alt-test](./assets/git_secret.png)
+
+Last step in this action is a nice job that will check the code for misspellings, personally I do a lot of this mistakes and I found it very useful.
+
 ## Demo
 
+
+## Next steps
+- Add a code coverages check. For this you can use https://codecov.io/
+- Add a smarter code quality tool - https://www.codacy.com/ or https://sonarcloud.io/
+- Add CD pipeline
 
 
 All the code can be found on [this](https://github.com/cosminseceleanu/tutorials) Github repository.

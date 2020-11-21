@@ -1,11 +1,9 @@
 package io.github.cosminseceleanu.tutorials.sampleapp.user.representation;
 
 import io.github.cosminseceleanu.tutorials.sampleapp.user.model.User;
-
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor

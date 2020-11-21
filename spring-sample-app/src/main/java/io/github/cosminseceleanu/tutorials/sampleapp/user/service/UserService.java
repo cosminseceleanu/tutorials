@@ -1,26 +1,24 @@
 package io.github.cosminseceleanu.tutorials.sampleapp.user.service;
 
+import io.github.cosminseceleanu.tutorials.sampleapp.user.exception.UserNotFoundException;
 import io.github.cosminseceleanu.tutorials.sampleapp.user.model.User;
 import io.github.cosminseceleanu.tutorials.sampleapp.user.repository.UserRepository;
-import io.github.cosminseceleanu.tutorials.sampleapp.user.exception.UserNotFoundException;
-
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @AllArgsConstructor
 @Component
 public class UserService {
-    private final UserRepository userRepository;
+    private final UserRepository userRepsitory;
 
     public Mono<User> get(String id) {
-        return userRepository.findById(id)
+        return userRepsitory.findById(id)
                 .switchIfEmpty(Mono.error(new UserNotFoundException()));
     }
 
     public Mono<User> create(User user) {
-        return userRepository.save(user.toBuilder().id(UUID.randomUUID().toString()).build());
+        return userRepsitory.save(user.toBuilder().id(UUID.randomUUID().toString()).build());
     }
 }
