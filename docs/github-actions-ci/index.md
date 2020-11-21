@@ -131,22 +131,25 @@ Last step in this action is a nice job that will check the code for misspellings
 
 ## Demo
 
-**Github checks**
+Github checks
 
 ![alt-test](./assets/checks.png)
+----------------------
 
-**Checkstyle violations with Reviewdog pull request comments**
+Checkstyle violations with Reviewdog pull request comments
 
 ![alt-test](./assets/reviewdog-error.png)
+-----------------------
 
-**Intellij checkstyle plugin**
+Intellij checkstyle plugin
 
 ![alt-test](./assets/intellij-checkstyle.png)
+-------------------------
 
-**Misspell with Reviewdog pull request comments**
+Misspell with Reviewdog pull request comments
 
 ![alt-test](./assets/reviewdog-misspell.png)
-
+--------------------------
 ## Next steps
 - Add a code coverage check. For this you can use https://codecov.io/
 - Add a smarter code quality tool - https://www.codacy.com/ or https://sonarcloud.io/
