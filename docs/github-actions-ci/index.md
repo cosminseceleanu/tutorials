@@ -11,7 +11,7 @@ Requirements:
 1. Java >= 8
 2. Maven
 3. Github repository
-4. A basic of understanding on github flows, pull requests, forks. [Here](https://guides.github.com/introduction/flow/) is a simple explanation.
+4. A basic understanding of github flows, pull requests, forks. [Here](https://guides.github.com/introduction/flow/) is a simple explanation.
 
 ## CI Pipeline
 
