@@ -3,5 +3,6 @@
 
 .idea
 
-*/target/*
+*/target
 */settings.xml
+**.iml
