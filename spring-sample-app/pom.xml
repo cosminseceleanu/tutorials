@@ -12,7 +12,7 @@
 	<artifactId>spring-sample-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-sample-app</name>
-	<description>A Spring Boot aplication used by various tutorials</description>
+	<description>A Spring Boot application used by various tutorials</description>
 
 	<properties>
 		<java.version>1.8</java.version>

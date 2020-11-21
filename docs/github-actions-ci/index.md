@@ -1,7 +1,7 @@
 # CI pipeline for a Spring Boot application using Github actions
 
 ## Introduction
-What is Continous integration? "Continuous Integration is a software development practice where members of a team integrate their work frequently, usually each person integrates at least daily - leading to multiple integrations per day." [1]
+What is Continuous integration? "Continuous Integration is a software development practice where members of a team integrate their work frequently, usually each person integrates at least daily - leading to multiple integrations per day." [1]
 
 What is a CI pipeline? CI pipeline is a series of automated steps that will verify each new line of code pushed to a repository to detect errors as soon as possible, and to ensure that team/organization code quality rules has been respected.  
 
@@ -58,7 +58,7 @@ Build action is quite simple, will run on the ubuntu latest OS then will install
 The first part of the yml file describes events that triggers the action to be executed, and in this case, action will start when a pull request to `master` branch is opened.
 
 
-#### Linter Actions
+#### Linter Action
 
 To ensure a coding standard for our Java application I'll use [Checkstyle](https://checkstyle.sourceforge.io/). Checkstyle is a highly configurable development tool that can be used with almost any coding standard and, also has support for some of the most know Java editors. For example, Intellij has a nice [plugin](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) that integrates with Checkstyle.
 
@@ -130,14 +130,22 @@ Reviewdog will add comments to the Github pull request, but it needs some creden
 Last step in this action is a nice job that will check the code for misspellings, personally I do a lot of this mistakes and I found it very useful.
 
 ## Demo
-Github checks
+
+**Github checks**
+
 ![alt-test](./assets/checks.png)
 
-Checkstyle violations with Reviewdog pull request comments
+**Checkstyle violations with Reviewdog pull request comments**
+
 ![alt-test](./assets/reviewdog-error.png)
 
-Intellij checkstyle plugin
+**Intellij checkstyle plugin**
+
 ![alt-test](./assets/intellij-checkstyle.png)
+
+**Misspell with Reviewdog pull request comments**
+
+![alt-test](./assets/reviewdog-misspell.png)
 
 ## Next steps
 - Add a code coverage check. For this you can use https://codecov.io/

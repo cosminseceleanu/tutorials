@@ -11,14 +11,14 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 @Component
 public class UserService {
-    private final UserRepository userRepsitory;
+    private final UserRepository userRepository;
 
     public Mono<User> get(String id) {
-        return userRepsitory.findById(id)
+        return userRepository.findById(id)
                 .switchIfEmpty(Mono.error(new UserNotFoundException()));
     }
 
     public Mono<User> create(User user) {
-        return userRepsitory.save(user.toBuilder().id(UUID.randomUUID().toString()).build());
+        return userRepository.save(user.toBuilder().id(UUID.randomUUID().toString()).build());
     }
 }
