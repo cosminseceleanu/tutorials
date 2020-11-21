@@ -21,6 +21,7 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public Mono<UserRepresentation> get(@PathVariable("id") String id) {
+        String documentaion = "misspelled";
         return userService.get(id).map(UserRepresentation::from);
     }
 

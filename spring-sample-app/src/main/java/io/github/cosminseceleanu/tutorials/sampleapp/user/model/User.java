@@ -6,7 +6,7 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class User {
-  String id;
-  String email;
-  String name;
+    String id;
+    String email;
+    String name;
 }
