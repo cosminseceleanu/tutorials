@@ -1,0 +1,18 @@
+name: Build
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 8
+    - name: Compile
+      run: mvn --no-transfer-progress clean compile
+    - name: Tests
+      run: mvn test

@@ -1,7 +1,7 @@
 package com.cosmin.tutorials.apm.controller;
 
-import com.cosmin.tutorials.apm.exception.UserNotFoundException;
 import com.cosmin.tutorials.apm.database.User;
+import com.cosmin.tutorials.apm.exception.UserNotFoundException;
 import com.cosmin.tutorials.apm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

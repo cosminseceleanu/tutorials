@@ -3,5 +3,7 @@
 
 .idea
 
-*/target/*
+*/target
 */settings.xml
+**.iml
+/elastic-apm-java/target/
