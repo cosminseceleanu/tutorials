@@ -70,8 +70,7 @@ Besides the REST api, the application will have some scheduled backgrounds tasks
  
  ![alt-text](./images/docker-ps.png)
  
- If APM Server service doesn't start, it's because it uses Elasticsearch and Elasticsearch take some time to start. To solve this, just restart some containers using this command: `docker-compose -f docker/docker-compose.yml restart apm user-microservice
-`. 
+ If APM Server service is restarting, it's because it uses Elasticsearch and Elasticsearch take some time to start. This will resolve itself when Elasticsearch is available. 
 
 #### Spring Boot Service Dockerfile
 
@@ -92,7 +91,7 @@ CMD java -javaagent:/opt/app/apm-agent.jar $JVM_OPTIONS -jar $JAR_NAME
 ### APM Server Dockerfile
 
 ```dockerfile
-FROM docker.elastic.co/apm/apm-server:6.5.4
+FROM docker.elastic.co/apm/apm-server:6.8.3
 COPY apm-server.yml /usr/share/apm-server/apm-server.yml
 USER root
 RUN chown root:apm-server /usr/share/apm-server/apm-server.yml

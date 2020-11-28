@@ -20,7 +20,7 @@ services:
       - apm
       - mysql
   kibana:
-    image: kibana:6.5.2
+    image: kibana:6.8.3
     environment:
       - "LOGGING_QUIET=true"
     links:
@@ -49,6 +49,7 @@ services:
     build:
       context: apm-server
       dockerfile: Dockerfile
+    restart: always
     ports:
       - 8200:8200
     links:
