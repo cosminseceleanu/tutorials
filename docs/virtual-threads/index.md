@@ -2,9 +2,12 @@
 
 Java Virtual Threads is a new feature introduced in Java 19 that aims to improve the performance and scalability of multi-threaded applications.
 
-Virtual threads provide a lightweight alternative to traditional operating system threads, allowing for a larger number of concurrent threads without the overhead of creating and managing a large number of native threads.
+Virtual threads provide a lightweight alternative to traditional operating system threads(platform threads), allowing for a larger number of concurrent threads without the overhead of creating and managing a large number of native threads.
 This can lead to increased performance and improved resource utilization, especially in situations where a large number of threads are needed.
 
+![Macbook](./virtual-threads-overview.png)
+
+-----
 Additionally, virtual threads provide a simplified programming model for developing concurrent applications, making it easier for developers to write and maintain high-performance multi-threaded code. Overall, Java Virtual Threads is a powerful tool for improving the performance and scalability of multi-threaded Java applications.
 
 # OS threads
@@ -91,6 +94,10 @@ threads.forEach(t -> {
     e.printStackTrace();
   }
 });
+---------
+public static Thread makeThread(Runnable task) {
+    return new Thread(task);
+}
 ```
 
 #### Result
@@ -117,6 +124,10 @@ threads.forEach(t -> {
     e.printStackTrace();
   }
 });
+-------
+public static Thread makeThread(Runnable task) {
+    return Thread.ofVirtual().unstarted(task);
+}
 ```
 
 #### Result
