@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/elastic-apm-java/apm.iml" filepath="$PROJECT_DIR$/elastic-apm-java/apm.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-sample-app/spring-sample-app.iml" filepath="$PROJECT_DIR$/spring-sample-app/spring-sample-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/tutorial.iml" filepath="$PROJECT_DIR$/tutorial.iml" />
+      <module fileurl="file://$PROJECT_DIR$/virtual-threads/virtual-threads.iml" filepath="$PROJECT_DIR$/virtual-threads/virtual-threads.iml" />
     </modules>
   </component>
 </project>
