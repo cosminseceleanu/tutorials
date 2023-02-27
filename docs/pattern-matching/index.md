@@ -130,7 +130,7 @@ public static void processNumber(Object input) {
 }
 ```
 
-In this example, the case for Integer n will never be executed because it is dominated by the preceding case for Number n. This leads to a compile-time error, "this case label is dominated by a preceding case label".
+In this example, the case for `Integer n` will never be executed because it is dominated by the preceding case for `Number n`. This leads to a compile-time error, "this case label is dominated by a preceding case label".
 To fix this error, the order of cases should be changed so that the more specific cases come first.
 
 ### Completeness
@@ -158,7 +158,7 @@ public static void printLengthPM(Shape shape) {
 If a new implementation of `Shape` named `Rectangle` is added, the above method that uses the sealed interface will not compile until the switch statement is updated to handle the new type `Rectangle`.
 
 It is recommended to not include a default case as it can lead to unexpected results if the switch statement does not cover all possible input values.
-Instead, using a sealed interface for the switch expression is a better way to ensure completeness. By declaring the interface sealed, the compiler can verify that all possible subtypes of the switch expression are covered in the cases.
+Instead, using a `sealed interface` for the switch expression is a better way to ensure completeness. By declaring the interface sealed, the compiler can verify that all possible subtypes of the switch expression are covered in the cases.
 This results in more robust and error-proof code.
 
 
